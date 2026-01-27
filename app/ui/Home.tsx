@@ -96,7 +96,7 @@ export default function Home() {
 
           <div className="mt-6 text-center">
             <h1 className="text-balance font-extrabold tracking-tight text-zinc-900 text-2xl md:text-3xl">
-              F****** C****** ***********, will you be my valentine?
+              Mister Anonymous Stranger, will you be my valentine?
             </h1>
             <p className="mx-auto mt-3 text-pretty text-base text-zinc-700 max-w-xl">
               I made this tiny website to ask you in the cutest way possible.
