@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+}
+
+/* ---- Valentine page styles (tiny, self-contained) ---- */
+
+.val-bg {
+  background: radial-gradient(1200px 700px at 50% 20%, #ffe2f1 0%, #f1dcff 55%, #dfe9ff 100%);
+}
+
+.val-card {
+  background: color-mix(in oklab, white 78%, transparent);
+  border: 1px solid color-mix(in oklab, #000 10%, transparent);
+  box-shadow:
+    0 20px 50px color-mix(in oklab, #000 12%, transparent),
+    0 1px 0 color-mix(in oklab, #fff 70%, transparent) inset;
+}
+
+.val-soft-ring {
+  box-shadow:
+    0 0 0 6px color-mix(in oklab, #ff4d9a 16%, transparent),
+    0 0 0 2px color-mix(in oklab, #000 10%, transparent);
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translate3d(0, 12px, 0) scale(var(--s, 1));
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(0, -120vh, 0) scale(var(--s, 1));
+    opacity: 0;
+  }
+}
+
+.floating-hearts {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.floating-hearts .heart {
+  position: absolute;
+  left: var(--x, 50%);
+  bottom: -32px;
+  font-size: var(--fs, 18px);
+  filter: drop-shadow(0 8px 8px color-mix(in oklab, #000 18%, transparent));
+  animation: floatUp var(--dur, 10s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  opacity: 0;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.bear-frame {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0) scale(0.99);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.bear-frame.is-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+@keyframes bearEnter {
+  0% {
+    transform: translate3d(-220px, -180px, 0) rotate(-6deg) scale(0.92);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.bear-enter {
+  animation: bearEnter 900ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+@keyframes wink {
+  0%,
+  86%,
+  100% {
+    transform: scaleY(1);
+  }
+  90% {
+    transform: scaleY(0.08);
+  }
+  93% {
+    transform: scaleY(1);
+  }
+}
+
+.bear-wink {
+  transform-origin: center;
+  animation: wink 3.2s ease-in-out infinite;
+}
+
+@keyframes roseBob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+  50% {
+    transform: translate3d(0, -4px, 0) rotate(2deg);
+  }
+}
+
+.rose-bob {
+  transform-origin: 50% 50%;
+  animation: roseBob 1.6s ease-in-out infinite;
+}
+
+.bear-wrap {
+  position: relative;
+  width: min(520px, 92vw);
+  aspect-ratio: 6 / 5;
+  margin-inline: auto;
+}
+
+.bear-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.bear-bob {
+  transform-origin: 50% 70%;
+  animation: bob 3.8s ease-in-out infinite;
+}
+
+.bear-sway {
+  transform-origin: 50% 70%;
+  animation: sway 2.6s ease-in-out infinite;
+}
+
+@keyframes loadingFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes loadingFadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes imageFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes imageFadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.02) translateY(-4px);
+  }
+}
+
+.loading-fade-in {
+  animation: loadingFadeIn 400ms ease-out both;
+}
+
+.loading-fade-out {
+  animation: loadingFadeOut 300ms ease-in both;
+}
+
+.image-fade {
+  animation: imageFadeIn 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.image-fade-out {
+  animation: imageFadeOut 400ms cubic-bezier(0.55, 0.06, 0.68, 0.19) both;
+}
+
+.val-modal {
+  animation: pop 220ms ease-out both;
+}
