@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { FloatingHearts } from "../components/FloatingHearts";
+import { start, stop, getRecordingId } from "@rrweb/browser-client";
 
 const NO_TEXTS = [
   { text: "No", image: "/image1.jpeg" },
@@ -38,7 +39,7 @@ export default function Home() {
 
   const noScale = useMemo(() => {
     // Shrink by 10% per click, minimum 0.3 (30% of original size)
-    const s = Math.pow(0.90, noClicks);
+    const s = Math.pow(0.9, noClicks);
     return clamp(s, 0.3, 1);
   }, [noClicks]);
 
@@ -63,15 +64,56 @@ export default function Home() {
     const url = new URL("https://twitter.com/intent/tweet");
     url.searchParams.set(
       "text",
-      "I just said YES to being someone's Valentine! 💖 #ValentinesDay"
+      "I just said YES to being someone's Valentine! 💖 #ValentinesDay",
     );
     window.open(url.toString(), "_blank", "noopener,noreferrer");
   }
+  useEffect(() => {
+    // Only record when explicitly enabled via ?rrweb=1
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("rrweb") !== "1") {
+      return;
+    }
+
+    const publicApiKey = process.env.NEXT_PUBLIC_RRWEB_PUBLIC_API_KEY;
+
+    if (!publicApiKey) {
+      console.error("rrweb: Missing public API key.");
+      return;
+    }
+
+    try {
+      start({
+        publicApiKey,
+
+        // Mask all input values.
+        maskAllInputs: true,
+
+        // Exclude elements marked as private.
+        blockSelector: "[data-private]",
+
+        // Identify the type of session in rrweb Cloud.
+        meta: {
+          app: "obianuju-val",
+          environment: "test",
+        },
+      });
+
+      console.log("rrweb recording started:", getRecordingId());
+    } catch (error) {
+      console.error("rrweb failed to start:", error);
+    }
+
+    return () => {
+      stop(false);
+    };
+  }, []);
 
   return (
     <>
       {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
-      
+
       <div className="val-bg relative min-h-screen overflow-hidden">
         <FloatingHearts seed={11} />
 
@@ -94,91 +136,91 @@ export default function Home() {
               />
             </div>
 
-          <div className="mt-6 text-center">
-            <h1 className="text-balance font-extrabold tracking-tight text-zinc-900 text-2xl md:text-3xl">
-              Mister Anonymous Stranger, will you be my valentine?
-            </h1>
-            <p className="mx-auto mt-3 text-pretty text-base text-zinc-700 max-w-xl">
-              I made this tiny website to ask you in the cutest way possible.
-            </p>
-          </div>
-
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <button
-              type="button"
-              onClick={() => setAccepted(true)}
-              className="val-soft-ring items-center justify-center rounded-full bg-pink-500 px-8 py-4 text-lg font-extrabold text-white shadow-lg shadow-pink-500/30 transition-transform duration-200 active:scale-95"
-              style={{
-                transform: `scale(${yesScale})`,
-              }}
-              aria-label="Yes"
-            >
-              YES 💖
-            </button>
-
-            <button
-              type="button"
-              onClick={handleNoClick}
-              className="max-w-[20ch] inline-flex items-center justify-center rounded-full bg-white/75 px-7 py-3.5 text-base font-bold text-zinc-900 ring-1 ring-black/10 backdrop-blur transition-all duration-200 hover:bg-white active:scale-95"
-              style={{
-                transform: `scale(${noScale})`,
-              }}
-              aria-label="No"
-              disabled={noScale <= 0.3}
-            >
-              {noLabel}
-            </button>
-          </div>
-
-          <div className="mt-6 text-center text-xs font-medium text-zinc-700/80">
-            Tip: clicking “No” makes “Yes” inresistable.
-          </div>
-        </div>
-      </main>
-
-      {accepted ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/35 p-5 backdrop-blur-sm">
-          <div className="val-modal val-card w-full max-w-md rounded-3xl p-6 text-center sm:p-8">
-            <div className="relative mx-auto h-32 w-32">
-              <Image
-                src="/yes-image.gif"
-                alt="Celebration"
-                fill
-                className="object-contain"
-                unoptimized
-              />
+            <div className="mt-6 text-center">
+              <h1 className="text-balance font-extrabold tracking-tight text-zinc-900 text-2xl md:text-3xl">
+                Mister Anonymous Stranger, will you be my valentine?
+              </h1>
+              <p className="mx-auto mt-3 text-pretty text-base text-zinc-700 max-w-xl">
+                I made this tiny website to ask you in the cutest way possible.
+              </p>
             </div>
-            <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-zinc-900">
-              YAY!!! It’s a date 💞
-            </h2>
-            <p className="mt-2 text-pretty text-zinc-700">
-              You just made my whole week. Happy Valentine’s!
-            </p>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-full bg-pink-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-pink-500/30 active:scale-95"
-                onClick={postAboutit}
-              >
-                Post about it! 🎉
-              </button>
-              <a
-                href="#"
-                className="inline-flex items-center justify-center rounded-full bg-white/75 px-6 py-3 text-sm font-bold text-zinc-900 ring-1 ring-black/10 active:scale-95"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setNoClicks(0);
-                  setAccepted(false);
+                onClick={() => setAccepted(true)}
+                className="val-soft-ring items-center justify-center rounded-full bg-pink-500 px-8 py-4 text-lg font-extrabold text-white shadow-lg shadow-pink-500/30 transition-transform duration-200 active:scale-95"
+                style={{
+                  transform: `scale(${yesScale})`,
                 }}
+                aria-label="Yes"
               >
-                Reset everything
-              </a>
+                YES 💖
+              </button>
+
+              <button
+                type="button"
+                onClick={handleNoClick}
+                className="max-w-[20ch] inline-flex items-center justify-center rounded-full bg-white/75 px-7 py-3.5 text-base font-bold text-zinc-900 ring-1 ring-black/10 backdrop-blur transition-all duration-200 hover:bg-white active:scale-95"
+                style={{
+                  transform: `scale(${noScale})`,
+                }}
+                aria-label="No"
+                disabled={noScale <= 0.3}
+              >
+                {noLabel}
+              </button>
+            </div>
+
+            <div className="mt-6 text-center text-xs font-medium text-zinc-700/80">
+              Tip: clicking “No” makes “Yes” inresistable.
             </div>
           </div>
-          <FloatingHearts seed={99} count={18} />
-        </div>
-      ) : null}
+        </main>
+
+        {accepted ? (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-black/35 p-5 backdrop-blur-sm">
+            <div className="val-modal val-card w-full max-w-md rounded-3xl p-6 text-center sm:p-8">
+              <div className="relative mx-auto h-32 w-32">
+                <Image
+                  src="/yes-image.gif"
+                  alt="Celebration"
+                  fill
+                  className="object-contain"
+                  unoptimized
+                />
+              </div>
+              <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-zinc-900">
+                YAY!!! It’s a date 💞
+              </h2>
+              <p className="mt-2 text-pretty text-zinc-700">
+                You just made my whole week. Happy Valentine’s!
+              </p>
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-full bg-pink-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-pink-500/30 active:scale-95"
+                  onClick={postAboutit}
+                >
+                  Post about it! 🎉
+                </button>
+                <a
+                  href="#"
+                  className="inline-flex items-center justify-center rounded-full bg-white/75 px-6 py-3 text-sm font-bold text-zinc-900 ring-1 ring-black/10 active:scale-95"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setNoClicks(0);
+                    setAccepted(false);
+                  }}
+                >
+                  Reset everything
+                </a>
+              </div>
+            </div>
+            <FloatingHearts seed={99} count={18} />
+          </div>
+        ) : null}
       </div>
     </>
   );
