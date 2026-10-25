@@ -76,7 +76,7 @@ export default function Home() {
       return;
     }
 
-    const publicApiKey = process.env.NEXT_PUBLIC_RRWEB_PUBLIC_API_KEY;
+    const publicApiKey = "public_key_rr_ERKD3W9SMX510GDR4YFAE338QXXSGN48";
 
     if (!publicApiKey) {
       console.error("rrweb: Missing public API key.");
